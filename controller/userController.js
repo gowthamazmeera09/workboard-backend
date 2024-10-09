@@ -57,6 +57,31 @@ const verifyEmail = async(req, res)=>{
         
     }
 }
+const resendVerificationCode = async(req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        if (user.isVerified) {
+            return res.status(400).json({ error: "User is already verified" });
+        }
+
+        // Generate new verification code
+        const verificationcode = Math.floor(100000 + Math.random() * 900000).toString();
+        user.verificationcode = verificationcode;
+        await user.save();
+
+        // Resend verification email
+        await sendverificationcode(user.email, verificationcode);
+
+        res.status(200).json({ success: "Verification code sent" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
 
 const userLogin = async(req, res) => {
     const { email, password } = req.body;
@@ -76,4 +101,4 @@ const userLogin = async(req, res) => {
     }
 }
 
-module.exports = { userRegister, userLogin, verifyEmail};
+module.exports = { userRegister, userLogin, verifyEmail,resendVerificationCode};
