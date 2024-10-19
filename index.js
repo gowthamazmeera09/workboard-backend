@@ -4,8 +4,7 @@ const dotEnv = require('dotenv');
 const cors = require('cors');
 const bodyparser = require('body-parser');
 const userRouter = require('./routes/userRouter');
-const imageRoutes = require('./routes/imageRouter');
-const path = require('path')
+const path = require('path');
 
 
 
@@ -15,7 +14,7 @@ dotEnv.config();
 const app = express();
 app.use(cors());
 app.use(bodyparser.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 const PORT = 2000
 mongoose.connect(process.env.MONGO_URL)
@@ -26,7 +25,8 @@ mongoose.connect(process.env.MONGO_URL)
     console.error(error)
 })
 app.use('/user',userRouter);
-app.use('/image', imageRoutes);
+
+
 
 
 app.listen(PORT,()=>{

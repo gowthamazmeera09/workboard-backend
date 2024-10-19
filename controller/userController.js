@@ -3,13 +3,26 @@ const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const dotEnv = require('dotenv');
+const multer = require('multer')
 
 dotEnv.config();
 
 const secretkey = process.env.MyNameIsMySecretKey;
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+
+const upload = multer({ storage });
+
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
+    const profilePicture = req.file ? req.file.path : ''; 
     try {
         const userEmail = await User.findOne({ email });
         if (userEmail) {
@@ -27,7 +40,8 @@ const userRegister = async(req, res) => {
             email,
             password: hashedpassword,
             phonenumber,
-            verificationcode
+            verificationcode,
+            profilePicture 
         });
         await newuser.save();
 
@@ -94,11 +108,11 @@ const userLogin = async(req, res) => {
             return res.status(403).json({ error: "Please verify your email before logging in" });
         }
         const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1h" });
-        res.status(200).json({ success: "Login successfully", token, userId: user._id });
+        res.status(200).json({success:"Login successful",token,userId:user._id,profilePicture: user.profilePicture ? `${"https://daily-work-backend.onrender.com/"}${user.profilePicture}` : ''})
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
     }
 }
 
-module.exports = { userRegister, userLogin, verifyEmail,resendVerificationCode};
+module.exports = { userRegister: [upload.single('profilePicture'), userRegister], userLogin, verifyEmail,resendVerificationCode};
