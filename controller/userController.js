@@ -3,22 +3,11 @@ const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const dotEnv = require('dotenv');
-const multer = require('multer')
 
 dotEnv.config();
 
 const secretkey = process.env.MyNameIsMySecretKey;
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-
-const upload = multer({ storage });
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
