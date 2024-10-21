@@ -25,10 +25,7 @@ const userSchema = new mongoose.Schema({
     verificationcode: {
         type: String // This will hold the token used for email verification
     },
-    profilePicture: { // New field added
-        type: String,
-        default: '' // Optional: default to empty string if not provided
-    },
+    imageUrl: { type: String, required: true },
 })
 const User = mongoose.model('User',userSchema)
 module.exports = User;
