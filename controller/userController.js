@@ -42,7 +42,7 @@ const userRegister = async(req, res) => {
         // Send verification email
         await sendverificationcode(newuser.email, verificationcode);
 
-        res.status(200).json({ success: "Registration successful! Please verify your email.", user:newuser,image:newuser.imageUrl });
+        res.status(200).json({ success: "Registration successful! Please verify your email.", user:newuser,imageUrl });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
