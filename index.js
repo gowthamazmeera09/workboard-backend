@@ -33,3 +33,6 @@ app.use('/user',userRouter);
 app.listen(PORT,()=>{
     console.log(`server started and running at ${PORT}`)
 })
+app.use('/',(req, res)=>{
+    res.send("<h1> hello gowtham how are you </h1>")
+})
