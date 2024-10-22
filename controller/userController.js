@@ -11,7 +11,7 @@ const secretkey = process.env.MyNameIsMySecretKey;
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
-    const imageUrl = `/uploads/${req.file.filename}`;
+    // const imageUrl = `/uploads/${req.file.filename}`;
      
     try {
         
@@ -34,7 +34,7 @@ const userRegister = async(req, res) => {
             password: hashedpassword,
             phonenumber,
             verificationcode,
-            imageUrl
+            // imageUrl
             
         });
         await newuser.save();
@@ -42,7 +42,7 @@ const userRegister = async(req, res) => {
         // Send verification email
         await sendverificationcode(newuser.email, verificationcode);
 
-        res.status(200).json({ success: "Registration successful! Please verify your email.", user:newuser,imageUrl });
+        res.status(200).json({ success: "Registration successful! Please verify your email.", user:newuser });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -102,9 +102,9 @@ const userLogin = async(req, res) => {
             return res.status(403).json({ error: "Please verify your email before logging in" });
         }
         const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1h" });
-        const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${user.imageUrl}`;
+        // const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${user.imageUrl}`;
         
-        res.status(200).json({success:"Login successful",token,userId:user._id,imageUrl})
+        res.status(200).json({success:"Login successful",token,userId:user._id})
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
