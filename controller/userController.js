@@ -11,9 +11,9 @@ const secretkey = process.env.MyNameIsMySecretKey;
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
+    const imageUrl = `/uploads/${req.file.filename}`;
      
     try {
-        const imageUrl = `/uploads/${req.file.filename}`;
         
 
         const userEmail = await User.findOne({ email });
