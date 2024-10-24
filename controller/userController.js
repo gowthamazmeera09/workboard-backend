@@ -110,5 +110,26 @@ const userLogin = async(req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 }
+const getallusers = async(req, res)=>{
+    try {
+        const users = await User.find().populate();
+        res.json({users})
+        
+    } catch (error) {
+        console.log(error);
+        res.status(404).json({error:"failed to get all users"})
+    }
+}
+const getuserById = async(req, res)=>{
+    const userId = req.params.id
+    try {
+        const userId = await User.findById(userId).populate();
+        res.status(201).json({userId})
+        
+    } catch (error) {
+        console.error(error);
+        res.status(404).json({error:"failed to get the user deta"})
+    }
+}
 
-module.exports = { userRegister, userLogin, verifyEmail,resendVerificationCode};
+module.exports = { userRegister, userLogin, verifyEmail,resendVerificationCode,getallusers,getuserById};
