@@ -123,8 +123,8 @@ const getallusers = async(req, res)=>{
 const getuserById = async(req, res)=>{
     const userId = req.params.id
     try {
-        const userId = await User.findById(userId).populate();
-        res.status(201).json({userId})
+        const user = await User.findById(userId).populate();
+        res.status(201).json({user})
         
     } catch (error) {
         console.error(error);
