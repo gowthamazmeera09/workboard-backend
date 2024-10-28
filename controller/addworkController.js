@@ -13,7 +13,7 @@ const workadding = async(req, res)=>{
             workname,
             experience,
             location,
-            user:user._id
+            user:user
         })
         const savedwork = await newwork.save();
         user.addwork.push(savedwork);
