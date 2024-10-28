@@ -112,7 +112,7 @@ const userLogin = async(req, res) => {
 }
 const getallusers = async(req, res)=>{
     try {
-        const users = await User.find().populate();
+        const users = await User.find().populate('addwork');
         res.json({users})
         
     } catch (error) {
@@ -123,7 +123,7 @@ const getallusers = async(req, res)=>{
 const getuserById = async(req, res)=>{
     const userId = req.params.id
     try {
-        const user = await User.findById(userId).populate();
+        const user = await User.findById(userId).populate('addwork');
         res.status(201).json({user})
         
     } catch (error) {

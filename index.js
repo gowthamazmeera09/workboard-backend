@@ -5,6 +5,10 @@ const bodyparser = require('body-parser');
 const userRouter = require('./routes/userRouter');
 const path = require('path');
 const cors = require('cors');
+const addworkRouter = require('./routes/addworkRouter');
+
+
+
 
 
 
@@ -26,6 +30,10 @@ mongoose.connect(process.env.MONGO_URL)
     console.error(error)
 })
 app.use('/user',userRouter);
+app.use('/work',addworkRouter);
+
+
+
 
 
 

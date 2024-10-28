@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+
 const userSchema = new mongoose.Schema({
     username:{
         type:String,
@@ -25,8 +26,12 @@ const userSchema = new mongoose.Schema({
     verificationcode: {
         type: String // This will hold the token used for email verification
     },
-    imageUrl: { type: String, default:"https://img.freepik.com/premium-photo/stylish-man-flat-vector-profile-picture-ai-generated_606187-310.jpg"
-     },
+    // imageUrl: { type: String, default:"https://img.freepik.com/premium-photo/stylish-man-flat-vector-profile-picture-ai-generated_606187-310.jpg"
+    //  },
+     addwork:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User'
+    }]
 })
 const User = mongoose.model('User',userSchema)
 module.exports = User;
