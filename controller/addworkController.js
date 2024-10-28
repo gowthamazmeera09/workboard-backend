@@ -8,7 +8,10 @@ const workadding = async(req, res)=>{
         if(!user){
             return res.status(400).json({error:"user not found"});
         }
-
+        const existingwork = await Addwork.findOne({workname});
+        if(existingwork){
+            return res.status(400).json({error:"these work is already exists"})
+        }
         const newwork = new Addwork({
             workname,
             experience,
