@@ -11,7 +11,7 @@ dotEnv.config();
 
 const secretkey = process.env.MyNameIsMySecretKey;
 
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads');
     },
@@ -34,7 +34,10 @@ const upload = multer({ storage, fileFilter })
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
-    const photo = req.file ? req.file.filename : '';
+    const photo = req.file ? {
+        data: req.file.buffer, // Store file buffer
+        contentType: req.file.mimetype // Store file mime type
+    } : null;
      
     try {
         
@@ -125,7 +128,7 @@ const userLogin = async(req, res) => {
             return res.status(403).json({ error: "Please verify your email before logging in" });
         }
         const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1h" });
-        const photo = user.photo ? `${req.protocol}://${req.get('host')}/uploads/${user.photo}` : '';
+        const photo = user.photo ? `data:${user.photo.contentType};base64,${user.photo.data.toString('base64')}` : '';
         
         res.status(200).json({success:"Login successful",token,userId:user._id,photo})
     } catch (error) {
