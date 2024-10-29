@@ -7,16 +7,14 @@ const path = require('path');
 const cors = require('cors');
 const addworkRouter = require('./routes/addworkRouter');
 
-
-
-
-
-
 dotEnv.config();
 
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: 'https://workboard-frontend.vercel.app/', // replace with your actual frontend URL
+    credentials: true, // if you need to include cookies or authorization headers
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
