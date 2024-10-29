@@ -3,15 +3,38 @@ const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const dotEnv = require('dotenv');
+const multer = require('multer');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 dotEnv.config();
 
 const secretkey = process.env.MyNameIsMySecretKey;
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, uuidv4() + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (allowedFileTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+};
+
+const upload = multer({ storage, fileFilter })
+
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
-    // const imageUrl = `/uploads/${req.file.filename}`;
+    const photo = req.file ? req.file.filename : '';
      
     try {
         
@@ -34,7 +57,7 @@ const userRegister = async(req, res) => {
             password: hashedpassword,
             phonenumber,
             verificationcode,
-            // imageUrl
+            photo
             
         });
         await newuser.save();
@@ -102,9 +125,9 @@ const userLogin = async(req, res) => {
             return res.status(403).json({ error: "Please verify your email before logging in" });
         }
         const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1h" });
-        // const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${user.imageUrl}`;
+        const photo = user.photo ? `${req.protocol}://${req.get('host')}/uploads/${user.photo}` : '';
         
-        res.status(200).json({success:"Login successful",token,userId:user._id})
+        res.status(200).json({success:"Login successful",token,userId:user._id,photo})
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -132,4 +155,10 @@ const getuserById = async(req, res)=>{
     }
 }
 
-module.exports = { userRegister, userLogin, verifyEmail,resendVerificationCode,getallusers,getuserById};
+module.exports = {
+    userRegister: [upload.single('photo'), userRegister],
+     userLogin, 
+     verifyEmail,
+     resendVerificationCode,
+     getallusers,
+     getuserById};
