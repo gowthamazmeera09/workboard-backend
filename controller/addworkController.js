@@ -1,8 +1,36 @@
 const Addwork = require('../model/Addwork');
 const User = require('../model/User');
+const multer = require('multer');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+
+const storage = multer.memoryStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, uuidv4() + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (allowedFileTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+};
+
+const upload = multer({ storage, fileFilter })
 
 const workadding = async(req, res)=>{
     const {workname,experience,location} = req.body;
+    const photos = req.files ? req.files.map(file => ({
+        data: file.buffer,
+        contentType: file.mimetype
+    })) : [];
+
     try {
         const user = await User.findById(req.userId);
         if(!user){
@@ -16,6 +44,7 @@ const workadding = async(req, res)=>{
             workname,
             experience,
             location,
+            photos,
             user:user
         })
         const savedwork = await newwork.save();
@@ -54,4 +83,7 @@ const workdelete = async(req, res)=>{
         res.status(404).json({error:"failed to delete the work"})
     }
 }
-module.exports = {workadding,workdelete}
+module.exports = {
+    workadding: [upload.array('photos',10), workadding],
+    workdelete
+}

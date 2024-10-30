@@ -13,6 +13,10 @@ const addworkSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    photos:[{
+        data: Buffer,
+        Type: String
+    }],
     user:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User'

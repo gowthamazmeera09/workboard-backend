@@ -31,10 +31,6 @@ app.use('/work',addworkRouter);
 
 
 
-
-
-
-
 app.listen(PORT,()=>{
     console.log(`server started and running at ${PORT}`)
 })
