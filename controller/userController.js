@@ -11,19 +11,13 @@ dotEnv.config();
 
 const secretkey = process.env.MyNameIsMySecretKey;
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Specify the folder to store images
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${uuidv4()}-${Date.now()}${path.extname(file.originalname)}`);
-    }
-});
+// Configure multer to use memory storage
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
-    const photoPath = req.file ? req.file.path : null;// Convert buffer to Base64 string
+    const photo = req.file ? req.file.buffer.toString('base64') : null; // Convert buffer to Base64 string
 
     try {
         const userEmail = await User.findOne({ email });
@@ -44,7 +38,7 @@ const userRegister = async(req, res) => {
             password: hashedpassword,
             phonenumber,
             verificationcode,
-            photo: photoPath // Store the Base64 string directly
+            photo // Store the Base64 string directly
         });
         await newuser.save();
 
@@ -114,7 +108,7 @@ const userLogin = async(req, res) => {
         const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1h" });
         
         // Sending Base64 encoded photo directly
-        const photoUrl = user.photo ? `${req.protocol}://${req.get('host')}/${user.photo}` : '';
+        const photo = user.photo ? `data:image/jpeg;base64,${user.photo}` : '';
 
         res.status(200).json({ success: "Login successful", token, userId: user._id, photo });
     } catch (error) {
