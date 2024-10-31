@@ -27,7 +27,6 @@ const userSchema = new mongoose.Schema({
         type: String // This will hold the token used for email verification
     },
     photo:{
-        // data: Buffer,
         type: String
     },
      addwork:[{
