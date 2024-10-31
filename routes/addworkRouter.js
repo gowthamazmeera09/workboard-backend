@@ -4,6 +4,6 @@ const VerifyToken = require('../middleware/VerifyToken');
 
 const router = express.Router();
 router.post('/workadding',VerifyToken,addworkController.workadding);
-router.post('/workdelete',addworkController.workdelete);
+router.delete('/:workdelete',addworkController.workdelete);
 
 module.exports = router;

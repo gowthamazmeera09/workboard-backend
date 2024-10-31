@@ -60,7 +60,7 @@ const workadding = async(req, res)=>{
     }
 }
 const workdelete = async(req, res)=>{
-    const workId = req.params.workId
+    const workId = req.params.workId;
     try {
         const user = await User.findById(req.userId);
         if(!user){
@@ -71,8 +71,9 @@ const workdelete = async(req, res)=>{
         if(!work){
             return res.status(403).json({error:"no work found"})
         }
+        res.status(200).json({message:"work deleted successfully"});
         
-        user.addwork.pull(workId);
+        user.addwork.delete(workId);
         await user.save();
 
 

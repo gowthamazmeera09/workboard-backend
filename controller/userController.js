@@ -11,37 +11,15 @@ dotEnv.config();
 
 const secretkey = process.env.MyNameIsMySecretKey;
 
-const storage = multer.memoryStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads');
-    },
-    filename: (req, file, cb) => {
-        cb(null, uuidv4() + '-' + Date.now() + path.extname(file.originalname));
-    }
-});
-
-const fileFilter = (req, file, cb) => {
-    const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if (allowedFileTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
-};
-
-const upload = multer({ storage, fileFilter })
-
+// Configure multer to use memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
-    const photo = req.file ? {
-        data: req.file.buffer, // Store file buffer
-        contentType: req.file.mimetype // Store file mime type
-    } : null;
-     
-    try {
-        
+    const photo = req.file ? req.file.buffer.toString('base64') : null; // Convert buffer to Base64 string
 
+    try {
         const userEmail = await User.findOne({ email });
         if (userEmail) {
             return res.status(400).json({ error: "Email already taken" });
@@ -53,44 +31,44 @@ const userRegister = async(req, res) => {
         const hashedpassword = await bcrypt.hash(password, 10);
         const verificationcode = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // Create new user with uploaded imageUrl
+        // Create new user with uploaded image data
         const newuser = new User({
             username,
             email,
             password: hashedpassword,
             phonenumber,
             verificationcode,
-            photo
-            
+            photo // Store the Base64 string directly
         });
         await newuser.save();
 
         // Send verification email
         await sendverificationcode(newuser.email, verificationcode);
 
-        res.status(200).json({ success: "Registration successful! Please verify your email.", user:newuser });
+        res.status(200).json({ success: "Registration successful! Please verify your email.", user: newuser });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
     }
-}
-const verifyEmail = async(req, res)=>{
+};
+
+const verifyEmail = async(req, res) => {
     try {
-        const {code} = req.body
-        const user = await User.findOne({verificationcode:code});
-        if(!user){
-            return res.status(404).json({error:"user not found"})
+        const { code } = req.body;
+        const user = await User.findOne({ verificationcode: code });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
         }
         user.isVerified = true;
         user.verificationcode = undefined;
         await user.save();
-        res.status(201).json({message:"Email verified successfully"})
+        res.status(201).json({ message: "Email verified successfully" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
-        
     }
-}
+};
+
 const resendVerificationCode = async(req, res) => {
     const { email } = req.body;
     try {
@@ -122,46 +100,49 @@ const userLogin = async(req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({ error: "invalid email or password" });
+            return res.status(401).json({ error: "Invalid email or password" });
         }
         if (!user.isVerified) {
             return res.status(403).json({ error: "Please verify your email before logging in" });
         }
         const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1h" });
-        const photo = user.photo ? `data:${user.photo.contentType};base64,${user.photo.data.toString('base64')}` : '';
         
-        res.status(200).json({success:"Login successful",token,userId:user._id,photo})
+        // Sending Base64 encoded photo directly
+        const photo = user.photo ? `data:image/jpeg;base64,${user.photo}` : '';
+
+        res.status(200).json({ success: "Login successful", token, userId: user._id, photo });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
     }
-}
-const getallusers = async(req, res)=>{
+};
+
+const getallusers = async(req, res) => {
     try {
         const users = await User.find().populate('addwork');
-        res.json({users})
-        
+        res.json({ users });
     } catch (error) {
         console.log(error);
-        res.status(404).json({error:"failed to get all users"})
+        res.status(404).json({ error: "Failed to get all users" });
     }
-}
-const getuserById = async(req, res)=>{
-    const userId = req.params.id
+};
+
+const getuserById = async(req, res) => {
+    const userId = req.params.id;
     try {
         const user = await User.findById(userId).populate('addwork');
-        res.status(201).json({user})
-        
+        res.status(201).json({ user });
     } catch (error) {
         console.error(error);
-        res.status(404).json({error:"failed to get the user deta"})
+        res.status(404).json({ error: "Failed to get the user details" });
     }
-}
+};
 
 module.exports = {
     userRegister: [upload.single('photo'), userRegister],
-     userLogin, 
-     verifyEmail,
-     resendVerificationCode,
-     getallusers,
-     getuserById};
+    userLogin,
+    verifyEmail,
+    resendVerificationCode,
+    getallusers,
+    getuserById
+};
