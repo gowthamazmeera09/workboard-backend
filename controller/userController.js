@@ -17,7 +17,7 @@ const upload = multer({ storage });
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
-    const photo = req.file ? req.file.toString('base64') : null; // Convert buffer to Base64 string
+    const photo = req.file ? req.file.buffer.toString('base64') : null; // Convert buffer to Base64 string
 
     try {
         const userEmail = await User.findOne({ email });
