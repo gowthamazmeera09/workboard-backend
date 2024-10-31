@@ -17,7 +17,7 @@ const upload = multer({ storage });
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
-    const photo = req.file ? req.file.buffer.toString('base64') : null; // Convert buffer to Base64 string
+    const photo = req.file ? req.file.filename : null; // Convert buffer to Base64 string
 
     try {
         const userEmail = await User.findOne({ email });
@@ -108,7 +108,7 @@ const userLogin = async(req, res) => {
         const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1h" });
         
         // Sending Base64 encoded photo directly
-        const photo = user.photo ? `data:image/jpeg;base64,${user.photo}` : '';
+        const photo = user.photo ? `data:image/jpeg;${user.photo}` : '';
 
         res.status(200).json({ success: "Login successful", token, userId: user._id, photo });
     } catch (error) {
