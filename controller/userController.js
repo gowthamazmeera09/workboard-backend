@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const dotEnv = require('dotenv');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
 dotEnv.config();
@@ -17,7 +18,7 @@ const upload = multer({ storage });
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
-    const photo = req.file ? req.file.buffer.toString('base64') : null; // Convert buffer to Base64 string
+    const photoFile = req.file; // Get the uploaded file
 
     try {
         const userEmail = await User.findOne({ email });
@@ -31,16 +32,25 @@ const userRegister = async(req, res) => {
         const hashedpassword = await bcrypt.hash(password, 10);
         const verificationcode = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // Create new user with uploaded image data
+        // Generate a unique filename
+        const photoFilename = photoFile ? `${uuidv4()}${path.extname(photoFile.originalname)}` : null;
+
+        // Create new user with uploaded image filename
         const newuser = new User({
             username,
             email,
             password: hashedpassword,
             phonenumber,
             verificationcode,
-            photo // Store the Base64 string directly
+            photo: photoFilename // Store only the filename
         });
         await newuser.save();
+
+        // Save the image to the filesystem
+        if (photoFile) {
+            const uploadPath = path.join(__dirname, '../uploads', photoFilename); // Adjust the path as needed
+            fs.writeFileSync(uploadPath, photoFile.buffer); // Write the file to the uploads directory
+        }
 
         // Send verification email
         await sendverificationcode(newuser.email, verificationcode);
@@ -106,11 +116,11 @@ const userLogin = async(req, res) => {
             return res.status(403).json({ error: "Please verify your email before logging in" });
         }
         const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1h" });
-        
-        // Sending Base64 encoded photo directly
-        const photo = user.photo ? `data:image/jpeg;base64,${user.photo}` : '';
 
-        res.status(200).json({ success: "Login successful", token, userId: user._id, photo });
+        // Construct the photo path for retrieval
+        const photoPath = user.photo ? `${process.env.BASE_URL}/uploads/${user.photo}` : '';
+
+        res.status(200).json({ success: "Login successful", token, userId: user._id, photo: photoPath });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
