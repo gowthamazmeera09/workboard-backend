@@ -1,21 +1,64 @@
 const mongoose = require('mongoose');
 
 const addworkSchema = new mongoose.Schema({
-    workname:{
+    role:{
         type:String,
-        required:true
+        required:true,
+        enum:['teacher','driver','painter']
     },
     experience:{
-        type:String,
+        type:Number,
         required:true
     },
     location:{
         type:String,
         required:true
     },
+    standard:{
+        type:String,
+        enum:[
+            '1st',
+            '2nd',
+            '3rd',
+            '4th',
+            '5th',
+            '6th',
+            '7th',
+            '8th',
+            '9th',
+            '10th',
+            'All'
+        ]
+    },
+    subject:{
+        type:String
+    },
+    vehicletype:{
+        type:String,
+        enum:[
+            'bike',
+            'scooty',,
+            'auto',
+            'appiauto',
+            '5-seat-car',
+            '7-seat-car',
+            'tractor',
+            'bus',
+            'lorry'
+        ]
+    },
+    paintertype:{
+        type:String,
+        enum:[
+            'interier',
+            'exterier',
+            'drawing',
+            'furniture',
+            'others'
+        ]
+    },
     photos:[{
-        data: Buffer,
-        Type: String
+        type:String,
     }],
     user:[{
         type:mongoose.Schema.Types.ObjectId,
