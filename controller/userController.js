@@ -4,8 +4,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const dotEnv = require('dotenv');
 const multer = require('multer');
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 
 dotEnv.config();
 
@@ -17,7 +15,9 @@ const upload = multer({ storage });
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
-    const photo = req.file ? req.file.buffer.toString('base64') : null; // Convert buffer to Base64 string
+    
+    // Extract photo file from the request
+    const photo = req.file; // The file from multer
 
     try {
         const userEmail = await User.findOne({ email });
@@ -31,6 +31,16 @@ const userRegister = async(req, res) => {
         const hashedpassword = await bcrypt.hash(password, 10);
         const verificationcode = Math.floor(100000 + Math.random() * 900000).toString();
 
+        let photoPath = null;
+        if (photo) {
+            const photoFileName = `${Date.now()}-${photo.originalname}`; // Create a unique filename
+            photoPath = `uploads/${photoFileName}`; // Define the path where you want to store the photo
+            
+            // Use fs module to save the file to the filesystem
+            const fs = require('fs');
+            fs.writeFileSync(photoPath, photo.buffer); // Save the file
+        }
+
         // Create new user with uploaded image data
         const newuser = new User({
             username,
@@ -38,7 +48,7 @@ const userRegister = async(req, res) => {
             password: hashedpassword,
             phonenumber,
             verificationcode,
-            photo // Store the Base64 string directly
+            photo: photoPath 
         });
         await newuser.save();
 
