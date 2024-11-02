@@ -6,6 +6,7 @@ const dotEnv = require('dotenv');
 const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const { error } = require('console');
 
 dotEnv.config();
 
@@ -130,13 +131,17 @@ const getallusers = async(req, res) => {
 const getuserById = async(req, res) => {
     const userId = req.params.id;
     try {
-        const user = await User.findById(userId).populate('addwork');
+        const user = await User.findById(userId).populate('addwork'); // Make sure this is correctly referencing addwork
+        if (!user) {
+            return res.status(400).json({ error: "User not found" });
+        }
         res.status(201).json({ user });
     } catch (error) {
         console.error(error);
         res.status(404).json({ error: "Failed to get the user details" });
     }
 };
+
 
 module.exports = {
     userRegister: [upload.single('photo'), userRegister],

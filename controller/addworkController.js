@@ -52,7 +52,9 @@ const workadding = async(req, res)=>{
         user.addwork.push(savedwork);
         await user.save();
 
-        res.status(202).json({message:"work added successfully"});
+        
+
+        res.status(202).json({message:"work added successfully",addedWork: user.addwork });
 
         
     } catch (error) {

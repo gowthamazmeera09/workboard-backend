@@ -29,9 +29,9 @@ const userSchema = new mongoose.Schema({
     photo:{
         type: String
     },
-     addwork:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User'
+    addwork: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Addwork'
     }]
 })
 const User = mongoose.model('User',userSchema)
