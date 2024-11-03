@@ -12,9 +12,10 @@ dotEnv.config();
 
 const secretkey = process.env.MyNameIsMySecretKey;
 
-// Configure multer to use memory storage
+ // Configure multer to use memory storage
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
+
 
 const userRegister = async(req, res) => {
     const { username, email, password, phonenumber } = req.body;
