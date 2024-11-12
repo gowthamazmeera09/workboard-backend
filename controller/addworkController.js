@@ -25,7 +25,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage, fileFilter })
 
 const workadding = async(req, res)=>{
-    const {role,experience,location,standard,subject,vehicletype,paintertype,} = req.body;
+    const {role,experience,location,standard,subject,vehicletype,paintertype,weldingtype,marbultype} = req.body;
     const photos = req.files.map(file => file.buffer);
 
     try {
@@ -33,7 +33,7 @@ const workadding = async(req, res)=>{
         if(!user){
             return res.status(400).json({error:"user not found"});
         }
-        const existingwork = await Addwork.findOne({role,experience,location,standard,subject,vehicletype,paintertype});
+        const existingwork = await Addwork.findOne({role,experience,location,standard,subject,vehicletype,paintertype,weldingtype,marbultype});
         if(existingwork){
             return res.status(400).json({error:"these work is already exists"})
         }
@@ -46,6 +46,8 @@ const workadding = async(req, res)=>{
             vehicletype,
             paintertype,
             photos,
+            weldingtype,
+            marbultype,
             user:user
         })
         const savedwork = await newwork.save();

@@ -4,7 +4,7 @@ const addworkSchema = new mongoose.Schema({
     role:{
         type:String,
         required:true,
-        enum:['teacher','driver','painter']
+        enum:['teacher','driver','painter','mason','marbul','plumber','electrician','welder']
     },
     experience:{
         type:Number,
@@ -13,6 +13,14 @@ const addworkSchema = new mongoose.Schema({
     location:{
         type:String,
         required:true
+    },
+    weldingtype:{
+        type:String,
+        enum:['fabrication','gaswelding','arcwelding']
+    },
+    marbultype:{
+        type:String,
+        enum:['marbul','tiles','granite','hardwood','stone']
     },
     standard:{
         type:String,
