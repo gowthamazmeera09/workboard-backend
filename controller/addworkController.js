@@ -64,31 +64,25 @@ const workadding = async(req, res)=>{
         res.status(500).json({error:"failed to add the work"})
     }
 }
-const workdelete = async(req, res)=>{
+const workdelete = async(req, res) => {
     const workId = req.params.workId;
     try {
-        const user = await User.findById(req.userId);
-        if(!user){
-            return res.status(400).json({error:"user not found"});
+
+        const work = await Addwork.findById(workId);
+        if (!work) {
+            return res.status(404).json({ error: "Work not found" });
         }
 
-        const work = await Addwork.findByIdAndDelete(workId);
-        if(!work){
-            return res.status(403).json({error:"no work found"})
-        }
-        res.status(200).json({message:"work deleted successfully"});
-        
-        user.addwork.delete(workId);
-        await user.save();
+        // Delete the work from the Addwork collection
+        await Addwork.findByIdAndDelete(workId);
 
-
-        res.status(222).json({message:"work deleted successfully"});
-        
+        res.status(200).json({ message: "Work deleted successfully" });
     } catch (error) {
         console.error(error);
-        res.status(404).json({error:"failed to delete the work"})
+        res.status(500).json({ error: "Failed to delete the work" });
     }
-}
+};
+
 module.exports = {
     workadding: [upload.array('photos',10), workadding],
     workdelete
