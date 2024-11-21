@@ -4,9 +4,9 @@ const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
-const storage = multer.memoryStorage({
+const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads');
+        cb(null, 'uploads/');  // Store files in the "uploads" folder
     },
     filename: (req, file, cb) => {
         cb(null, uuidv4() + '-' + Date.now() + path.extname(file.originalname));
@@ -26,7 +26,7 @@ const upload = multer({ storage, fileFilter })
 
 const workadding = async(req, res)=>{
     const {role,experience,location,standard,subject,vehicletype,paintertype,weldingtype,marbultype} = req.body;
-    const photos = req.files.map(file => file.buffer);
+    const photos = req.files.map(file => file.filename); 
 
     try {
         const user = await User.findById(req.userId);
