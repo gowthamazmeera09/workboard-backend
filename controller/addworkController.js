@@ -4,29 +4,20 @@ const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
-const storage = multer.memoryStorage({
+const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads');
+        cb(null, 'uploads/'); // Change to save in 'uploads' folder on your server
     },
     filename: (req, file, cb) => {
-        cb(null, uuidv4() + '-' + Date.now() + path.extname(file.originalname));
+        cb(null, uuidv4() + '-' + Date.now() + path.extname(file.originalname)); // Create a unique filename
     }
 });
 
-const fileFilter = (req, file, cb) => {
-    const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if (allowedFileTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
-};
-
-const upload = multer({ storage, fileFilter })
+const upload = multer({ storage })
 
 const workadding = async(req, res)=>{
     const {role,experience,location,standard,subject,vehicletype,paintertype,weldingtype,marbultype} = req.body;
-    const photos = req.files.map(file => file.buffer);
+    const photoPaths = req.files.map(file => file.path);
 
     try {
         const user = await User.findById(req.userId);
@@ -45,7 +36,7 @@ const workadding = async(req, res)=>{
             subject,
             vehicletype,
             paintertype,
-            photos,
+            photos: photoPaths,
             weldingtype,
             marbultype,
             user:user

@@ -65,9 +65,7 @@ const addworkSchema = new mongoose.Schema({
             'others'
         ]
     },
-    photos:[{
-        type:String,
-    }],
+    photos: [String],
     user:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User'
