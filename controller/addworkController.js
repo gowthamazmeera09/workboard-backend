@@ -3,30 +3,31 @@ const User = require('../model/User');
 const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const { v2: cloudinary } = require('cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const dotEnv = require('dotenv');
 
-const storage = multer.memoryStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads');
-    },
-    filename: (req, file, cb) => {
-        cb(null, uuidv4() + '-' + Date.now() + path.extname(file.originalname));
-    }
+dotEnv.config();
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const fileFilter = (req, file, cb) => {
-    const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if (allowedFileTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
-};
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'workboard',
+        allowed_formats: ['jpg', 'jpeg', 'png'],
+    },
+});
 
-const upload = multer({ storage, fileFilter })
+const upload= multer({ storage });
 
 const workadding = async (req, res) => {
     const { role, experience, location, standard, subject, vehicletype, paintertype, weldingtype, marbultype } = req.body;
-    const photos = req.files.map(file => file.buffer);
+    const photos = req.files.map(file => file.path); // Array of Cloudinary URLs
     try {
         const user = await User.findById(req.userId);
         if (!user) {
@@ -66,23 +67,29 @@ const workadding = async (req, res) => {
 const workdelete = async (req, res) => {
     const workId = req.params.workId;
     try {
-
         const work = await Addwork.findById(workId);
-        if (!work) {
-            return res.status(404).json({ error: "Work not found" });
-        }
+        if (!work) return res.status(404).json({ error: "Work not found" });
 
-        // Delete the work from the Addwork collection
+        // Delete associated images from Cloudinary
+        const publicIds = work.photos.map(photo => {
+            const urlParts = photo.split('/');
+            return urlParts[urlParts.length - 1].split('.')[0];
+        });
+        await cloudinary.api.delete_resources(publicIds);
+
+        // Delete work from database
         await Addwork.findByIdAndDelete(workId);
 
         res.status(200).json({ message: "Work deleted successfully" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Failed to delete the work" });
+        res.status(500).json({ error: "Failed to delete work" });
     }
 };
 
+
 module.exports = {
-    workadding: [upload.array('photos', 10), workadding],
-    workdelete
+    workadding,
+    workdelete,
+    upload
 }
