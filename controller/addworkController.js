@@ -86,10 +86,30 @@ const workdelete = async (req, res) => {
         res.status(500).json({ error: "Failed to delete work" });
     }
 };
+const deleteImage = async (req, res) => {
+    const { workId, publicId } = req.body;
+    try {
+        const work = await Addwork.findById(workId);
+        if (!work) return res.status(404).json({ error: "Work not found" });
+
+        // Remove the image from Cloudinary
+        await cloudinary.uploader.destroy(publicId);
+
+        // Remove the image from the database
+        work.photos = work.photos.filter(photo => !photo.includes(publicId));
+        await work.save();
+
+        res.status(200).json({ message: "Image deleted successfully", updatedPhotos: work.photos });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to delete image" });
+    }
+};
 
 
 module.exports = {
     workadding,
     workdelete,
+    deleteImage,
     upload
 }
