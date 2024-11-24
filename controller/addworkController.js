@@ -105,11 +105,36 @@ const deleteImage = async (req, res) => {
         res.status(500).json({ error: "Failed to delete image" });
     }
 };
-
+const addImagesToWork = async (req, res) => {
+    const { workId } = req.params;
+  
+    try {
+      // Find the work by ID
+      const work = await Addwork.findById(workId);
+      if (!work) {
+        return res.status(404).json({ error: 'Work not found' });
+      }
+  
+      // Get the uploaded images from Cloudinary URLs
+      const photos = req.files.map(file => file.path);
+  
+      // Add the new images to the existing photos array
+      work.photos.push(...photos);
+  
+      // Save the updated work entry
+      await work.save();
+  
+      res.status(200).json({ message: 'Images added successfully', updatedPhotos: work.photos });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to add images' });
+    }
+  };
 
 module.exports = {
     workadding,
     workdelete,
     deleteImage,
+    addImagesToWork,
     upload
 }
