@@ -26,14 +26,14 @@ const storage = new CloudinaryStorage({
 const upload= multer({ storage });
 
 const workadding = async (req, res) => {
-    const { role, experience, location, standard, subject, vehicletype, paintertype, weldingtype, marbultype } = req.body;
+    const { role, experience, location, standard, subject, vehicletype, paintertype, weldingtype, marbultype,carpenter,AcTech,liftTech} = req.body;
     const photos = req.files.map(file => file.path); // Array of Cloudinary URLs
     try {
         const user = await User.findById(req.userId);
         if (!user) {
             return res.status(400).json({ error: "user not found" });
         }
-        const existingwork = await Addwork.findOne({ role, experience, location, standard, subject, vehicletype, paintertype, weldingtype, marbultype });
+        const existingwork = await Addwork.findOne({ role, experience, location, standard, subject, vehicletype, paintertype, weldingtype, marbultype,carpenter,AcTech,liftTech });
         if (existingwork) {
             return res.status(400).json({ error: "these work is already exists" })
         }
@@ -48,6 +48,9 @@ const workadding = async (req, res) => {
             photos,
             weldingtype,
             marbultype,
+            carpenter,
+            AcTech,
+            liftTech,
             user: user
         })
         const savedwork = await newwork.save();

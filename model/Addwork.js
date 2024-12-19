@@ -4,7 +4,7 @@ const addworkSchema = new mongoose.Schema({
     role:{
         type:String,
         required:true,
-        enum:['teacher','driver','painter','mason','marbul','plumber','electrician','welder']
+        enum:['teacher','driver','painter','mason','marbul','plumber','electrician','welder','carpenter','AcTech','liftTech']
     },
     experience:{
         type:Number,

@@ -153,6 +153,19 @@ const getuserById = async(req, res) => {
         res.status(404).json({ error: "Failed to get the user details" });
     }
 };
+const getUsersByRole = async (req, res) => {
+    const { role } = req.params; // Get role from request params
+    try {
+        const users = await User.find({ role }); // Filter users by role
+        if (!users.length) {
+            return res.status(404).json({ error: "No users found for this role" });
+        }
+        res.status(200).json({ users });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to get users for this role" });
+    }
+};
 
 
 module.exports = {
@@ -162,5 +175,6 @@ module.exports = {
     resendVerificationCode,
     getallusers,
     getuserById,
+    getUsersByRole,
     upload
 };
