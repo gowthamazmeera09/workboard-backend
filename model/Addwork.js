@@ -10,10 +10,6 @@ const addworkSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    location:{
-        type:String,
-        required:true
-    },
     weldingtype:{
         type:String,
         enum:['fabrication','gaswelding','arcwelding']
