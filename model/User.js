@@ -12,8 +12,8 @@ const userSchema = new mongoose.Schema({
     addwork: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Addwork' }],
     location: {
         type: { type: String, default: 'Point' },
-        coordinates: { type: [Number], required: true }, // Add this line to store coordinates
-        address: { type: String, required: true }         // Add this line to store the address
+        coordinates: { type: [Number], required: true },
+        address: { type: String, required: true }         
     }
 });
 
