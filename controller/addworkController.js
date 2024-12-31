@@ -26,17 +26,35 @@ const storage = new CloudinaryStorage({
 const upload= multer({ storage });
 
 const workadding = async (req, res) => {
-    const { role, experience, standard, subject, vehicletype, paintertype, weldingtype, marbultype,carpenter,AcTech,liftTech} = req.body;
+    const { role, experience, standard, subject, vehicletype, paintertype, weldingtype, marbultype, carpenter, AcTech, liftTech } = req.body;
     const photos = req.files.map(file => file.path); // Array of Cloudinary URLs
+
     try {
         const user = await User.findById(req.userId);
         if (!user) {
-            return res.status(400).json({ error: "user not found" });
+            return res.status(400).json({ error: "User not found" });
         }
-        const existingwork = await Addwork.findOne({ role, standard, subject, vehicletype, paintertype, weldingtype, marbultype,carpenter,AcTech,liftTech });
+
+        // Check if the user has already added this work
+        const existingwork = await Addwork.findOne({
+            role,
+            standard,
+            subject,
+            vehicletype,
+            paintertype,
+            weldingtype,
+            marbultype,
+            carpenter,
+            AcTech,
+            liftTech,
+            user: user._id // Restrict search to the specific user
+        });
+
         if (existingwork) {
-            return res.status(400).json({ error: "these work is already exists" })
+            return res.status(400).json({ error: "You have already added this work" });
         }
+
+        // Create new work entry
         const newwork = new Addwork({
             role,
             experience,
@@ -50,22 +68,22 @@ const workadding = async (req, res) => {
             carpenter,
             AcTech,
             liftTech,
-            user: user._id
-        })
+            user: user
+        });
+
         const savedwork = await newwork.save();
+
+        // Add work reference to the user's `addwork` array
         user.addwork.push(savedwork);
         await user.save();
 
-
-
-        res.status(202).json({ message: "work added successfully", addedWork: user.addwork });
-
-
+        res.status(202).json({ message: "Work added successfully", addedWork: user.addwork });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "failed to add the work" })
+        res.status(500).json({ error: "Failed to add the work" });
     }
-}
+};
+
 const workdelete = async (req, res) => {
     const workId = req.params.workId;
     try {
