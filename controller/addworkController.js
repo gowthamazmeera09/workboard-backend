@@ -97,7 +97,14 @@ const workdelete = async (req, res) => {
         });
         await cloudinary.api.delete_resources(publicIds);
 
-        // Delete work from database
+        // Remove work from the user's addwork array
+        const user = await User.findById(work.user);
+        if (user) {
+            user.addwork.pull(workId); // Remove workId from user's addwork array
+            await user.save();
+        }
+
+        // Delete the work from the database
         await Addwork.findByIdAndDelete(workId);
 
         res.status(200).json({ message: "Work deleted successfully" });
@@ -106,6 +113,7 @@ const workdelete = async (req, res) => {
         res.status(500).json({ error: "Failed to delete work" });
     }
 };
+
 const deleteImage = async (req, res) => {
     const { workId, publicId } = req.body;
     try {
