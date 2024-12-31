@@ -33,7 +33,7 @@ const workadding = async (req, res) => {
         if (!user) {
             return res.status(400).json({ error: "user not found" });
         }
-        const existingwork = await Addwork.findOne({ role, experience, standard, subject, vehicletype, paintertype, weldingtype, marbultype,carpenter,AcTech,liftTech });
+        const existingwork = await Addwork.findOne({ role, standard, subject, vehicletype, paintertype, weldingtype, marbultype,carpenter,AcTech,liftTech });
         if (existingwork) {
             return res.status(400).json({ error: "these work is already exists" })
         }
