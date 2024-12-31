@@ -50,7 +50,7 @@ const workadding = async (req, res) => {
             carpenter,
             AcTech,
             liftTech,
-            user: user
+            user: user._id
         })
         const savedwork = await newwork.save();
         user.addwork.push(savedwork);
