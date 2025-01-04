@@ -4,7 +4,10 @@ const addworkSchema = new mongoose.Schema({
     role:{
         type:String,
         required:true,
-        enum:['teacher','driver','painter','mason','marbul','plumber','electrician','welder','carpenter','AcTech','liftTech']
+        enum:['teacher','driver','painter','mason','marbul','plumber','electrician','welder','carpenter','AcTech','liftTech',
+            'agricultural labour','car mechanic','bike mechanic','auto mechanic','car wash','chief','cloths washer','garden cleaner',
+            'glass cleaner','kids caretaker','makeup artest','old people caretaker','photographer','cattering','washing dishes'
+        ]
     },
     experience:{
         type:Number,
@@ -59,6 +62,49 @@ const addworkSchema = new mongoose.Schema({
             'drawing',
             'furniture',
             'others'
+        ]
+    },
+    cartype:{
+        type:String,
+        enum:[
+            'maruthi suzuki',
+            'hundai',
+            'tata moters',
+            'mahindra',
+            'honda',
+            'toyota',
+            'renualt',
+            'volkswagan',
+            'kia',
+            'scoda'
+        ]
+    },
+    biketype:{
+        type:String,
+        enum:[
+            'hero',
+            'honda',
+            'bajaj',
+            'tvs',
+            'royal enfield',
+            'ktm'
+        ]
+    },
+    autotype:{
+        type:String,
+        enum:[
+            'bajaj',
+            'mahindra'
+        ]
+    },
+    shoottype:{
+        type:String,
+        enum:[
+            'prewedding',
+            'wedding',
+            'postwedding',
+            'birthday',
+            'shoot'
         ]
     },
     photos: [String],

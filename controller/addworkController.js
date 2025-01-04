@@ -23,10 +23,27 @@ const storage = new CloudinaryStorage({
     },
 });
 
-const upload= multer({ storage });
+const upload = multer({ storage });
 
 const workadding = async (req, res) => {
-    const { role, experience, standard, subject, vehicletype, paintertype, weldingtype, marbultype, carpenter, AcTech, liftTech } = req.body;
+    const {
+        role,
+        experience,
+        standard,
+        subject,
+        vehicletype,
+        paintertype,
+        weldingtype,
+        marbultype,
+        carpenter,
+        AcTech,
+        liftTech,
+        cartype,
+        biketype,
+        autotype,
+        shoottype
+
+    } = req.body;
     const photos = req.files.map(file => file.path); // Array of Cloudinary URLs
 
     try {
@@ -47,6 +64,10 @@ const workadding = async (req, res) => {
             carpenter,
             AcTech,
             liftTech,
+            cartype,
+            biketype,
+            autotype,
+            shoottype,
             user: user._id // Restrict search to the specific user
         });
 
@@ -68,6 +89,10 @@ const workadding = async (req, res) => {
             carpenter,
             AcTech,
             liftTech,
+            cartype,
+            biketype,
+            autotype,
+            shoottype,
             user: user
         });
 
@@ -135,29 +160,29 @@ const deleteImage = async (req, res) => {
 };
 const addImagesToWork = async (req, res) => {
     const { workId } = req.params;
-  
+
     try {
-      // Find the work by ID
-      const work = await Addwork.findById(workId);
-      if (!work) {
-        return res.status(404).json({ error: 'Work not found' });
-      }
-  
-      // Get the uploaded images from Cloudinary URLs
-      const photos = req.files.map(file => file.path);
-  
-      // Add the new images to the existing photos array
-      work.photos.push(...photos);
-  
-      // Save the updated work entry
-      await work.save();
-  
-      res.status(200).json({ message: 'Images added successfully', updatedPhotos: work.photos });
+        // Find the work by ID
+        const work = await Addwork.findById(workId);
+        if (!work) {
+            return res.status(404).json({ error: 'Work not found' });
+        }
+
+        // Get the uploaded images from Cloudinary URLs
+        const photos = req.files.map(file => file.path);
+
+        // Add the new images to the existing photos array
+        work.photos.push(...photos);
+
+        // Save the updated work entry
+        await work.save();
+
+        res.status(200).json({ message: 'Images added successfully', updatedPhotos: work.photos });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Failed to add images' });
+        console.error(error);
+        res.status(500).json({ error: 'Failed to add images' });
     }
-  };
+};
 
 module.exports = {
     workadding,
