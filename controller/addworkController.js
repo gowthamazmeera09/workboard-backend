@@ -72,7 +72,7 @@ const workadding = async (req, res) => {
         });
 
         if (existingwork) {
-            return res.status(400).json({ error: "You have already added this work" });
+            return res.status(403).json({ error: "You have already added this work" });
         }
 
         // Create new work entry
