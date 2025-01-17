@@ -5,8 +5,8 @@ const addworkSchema = new mongoose.Schema({
         type:String,
         required:true,
         enum:['teacher','driver','painter','mason','marbul','plumber','electrician','welder','carpenter','AcTech','liftTech',
-            'agricultural labour','car mechanic','bike mechanic','auto mechanic','car wash','chief','cloths washer','garden cleaner',
-            'glass cleaner','kids caretaker','makeup artest','old people caretaker','photographer','cattering','washing dishes','watchman']
+            'agriculturallabour','carmechanic','bikemechanic','automechanic','carwash','chief','clothswasher','gardencleaner',
+            'glasscleaner','kidscaretaker','makeupartest','oldpeoplecaretaker','photographer','cattering','washingdishes','watchman']
     },
     experience:{
         type:Number,
@@ -66,9 +66,9 @@ const addworkSchema = new mongoose.Schema({
     cartype:{
         type:String,
         enum:[
-            'maruthi suzuki',
+            'maruthisuzuki',
             'hundai',
-            'tata moters',
+            'tatamoters',
             'mahindra',
             'honda',
             'toyota',
@@ -85,7 +85,7 @@ const addworkSchema = new mongoose.Schema({
             'honda',
             'bajaj',
             'tvs',
-            'royal enfield',
+            'royalenfield',
             'ktm'
         ]
     },
