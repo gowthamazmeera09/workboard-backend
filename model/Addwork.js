@@ -6,7 +6,7 @@ const addworkSchema = new mongoose.Schema({
         required:true,
         enum:['teacher','driver','painter','mason','marbul','plumber','electrician','welder','carpenter','AcTech','liftTech',
             'agriculturallabour','carmechanic','bikemechanic','automechanic','carwash','chief','clothswasher','gardencleaner',
-            'glasscleaner','kidscaretaker','makeupartest','oldpeoplecaretaker','photographer','cattering','washingdishes','watchman']
+            'glasscleaner','kidscaretaker','makeupartest','oldpeoplecaretaker','photographer','cattering','washing dishes','watchman']
     },
     experience:{
         type:Number,
