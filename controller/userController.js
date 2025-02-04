@@ -8,6 +8,11 @@ const path = require('path');
 const { v2: cloudinary } = require('cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
+
+
+
+
+
 dotEnv.config();
 
 const secretkey = process.env.MyNameIsMySecretKey;
@@ -213,6 +218,8 @@ const addUserLocation = async (req, res) => {
     }
 };
 
+  
+  
 
 module.exports = {
     userRegister,

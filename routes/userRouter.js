@@ -20,4 +20,6 @@ router.post('/add-location', userController.addUserLocation);
 router.get('/user-location/:id', userController.getuserById);
 
 
+
+
 module.exports = router;
