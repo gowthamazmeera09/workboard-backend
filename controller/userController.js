@@ -7,6 +7,7 @@ const multer = require('multer');
 const path = require('path');
 const { v2: cloudinary } = require('cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const nodemailer = require('nodemailer');
 
 
 
@@ -142,7 +143,7 @@ const userLogin = async (req, res) => {
     }
 };
 
-const getallusers = async(req, res) => {
+const getallusers = async (req, res) => {
     try {
         const users = await User.find().populate('addwork'); // Populate 'addwork' if needed
         const usersWithLocation = users.map(user => ({
@@ -161,14 +162,14 @@ const getallusers = async(req, res) => {
 };
 
 
-const getuserById = async(req, res) => {
+const getuserById = async (req, res) => {
     const userId = req.params.id;
     try {
         const user = await User.findById(userId).populate('addwork'); // Populate 'addwork' if needed
         if (!user) {
             return res.status(400).json({ error: "User not found" });
         }
-        res.status(201).json({ 
+        res.status(201).json({
             user,
             location: {
                 type: user.location.type,
@@ -218,8 +219,32 @@ const addUserLocation = async (req, res) => {
     }
 };
 
-  
-  
+// 
+
+const resetPassword = async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+
+        // Save the updated user
+        await user.save();
+
+        res.status(200).json({ success: "Password reset successful" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 
 module.exports = {
     userRegister,
@@ -230,5 +255,6 @@ module.exports = {
     getuserById,
     getUsersByRole,
     addUserLocation,
-    upload
+    upload,
+    resetPassword 
 };
