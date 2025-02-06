@@ -9,6 +9,8 @@ const userSchema = new mongoose.Schema({
     isVerified: { type: Boolean, default: false },
     verificationcode: { type: String },
     photo: { type: String },
+    resetOTP: { type: String }, // Store OTP
+    otpExpires: { type: Date }, // OTP Expiry time
     addwork: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Addwork' }],
     location: {
         type: { type: String, default: 'Point' },

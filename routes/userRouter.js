@@ -19,7 +19,9 @@ router.post('/add-location', userController.addUserLocation);
 // In your userRouter.js
 router.get('/user-location/:id', userController.getuserById);
 
-router.post('/reset-password-direct', userController.resetPassword);
+router.post('/request-password-reset', userController.requestPasswordReset);
+router.post('/verify-otp', userController.verifyOTP);
+router.post('/reset-password', userController.resetPasswordWithOTP);
 
 
 
