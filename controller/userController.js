@@ -131,7 +131,7 @@ const userLogin = async (req, res) => {
         if (!user.isVerified) {
             return res.status(403).json({ error: "Please verify your email before logging in" });
         }
-        const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1m" });
+        const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1h" });
 
 
         const photo = user.photo;
