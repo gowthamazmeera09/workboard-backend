@@ -14,11 +14,11 @@ const addworkSchema = new mongoose.Schema({
     },
     weldingtype:{
         type:String,
-        enum:['fabrication','gaswelding','arcwelding','All']
+        enum:['fabrication','gaswelding','arcwelding']
     },
     marbultype:{
         type:String,
-        enum:['marbul','tiles','granite','hardwood','stone','All']
+        enum:['marbul','tiles','granite','hardwood','stone']
     },
     standard:{
         type:String,
@@ -50,8 +50,7 @@ const addworkSchema = new mongoose.Schema({
             '7-seat-car',
             'tractor',
             'bus',
-            'lorry',
-            'All'
+            'lorry'
         ]
     },
     paintertype:{
@@ -61,8 +60,7 @@ const addworkSchema = new mongoose.Schema({
             'exterier',
             'drawing',
             'furniture',
-            'others',
-            'All'
+            'others'
         ]
     },
     cartype:{
@@ -105,8 +103,7 @@ const addworkSchema = new mongoose.Schema({
             'wedding',
             'postwedding',
             'birthday',
-            'shoot',
-            'All'
+            'shoot'
         ]
     },
     photos: [String],
