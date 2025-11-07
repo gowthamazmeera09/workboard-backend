@@ -22,6 +22,8 @@ router.get('/user-location/:id', userController.getuserById);
 router.post('/request-password-reset', userController.requestPasswordReset);
 router.post('/verify-otp', userController.verifyOTP);
 router.post('/reset-password', userController.resetPasswordWithOTP);
+// Test email route (sends using configured mailer or Ethereal fallback)
+router.post('/test-email', userController.testEmail);
 
 
 

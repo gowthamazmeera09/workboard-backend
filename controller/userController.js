@@ -246,6 +246,53 @@ const requestPasswordReset = async (req, res) => {
     }
 };
 
+// Test email endpoint: sends a test verification code using the configured transporter
+// If no real SMTP credentials are configured, falls back to an Ethereal test account and
+// returns the preview URL so you can inspect the message in the browser.
+const testEmail = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ error: 'Missing email in request body' });
+
+        // If real SMTP creds are configured, use existing sendverificationcode
+        const hasMailerCreds = !!(process.env.EMAIL || process.env.EMAIL_USER || process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS);
+        const code = generateOTP();
+
+        if (hasMailerCreds) {
+            // Use the existing mail sending function; it will log errors if auth fails
+            await sendverificationcode(email, code);
+            return res.status(200).json({ success: `Verification email sent to ${email}` });
+        }
+
+        // Fallback: use nodemailer test account (Ethereal) for local dev
+        const testAccount = await nodemailer.createTestAccount();
+        const testTransporter = nodemailer.createTransport({
+            host: testAccount.smtp.host,
+            port: testAccount.smtp.port,
+            secure: testAccount.smtp.secure,
+            auth: {
+                user: testAccount.user,
+                pass: testAccount.pass,
+            },
+        });
+
+        const info = await testTransporter.sendMail({
+            from: `"work Board (Test)" <${testAccount.user}>`,
+            to: email,
+            subject: 'Test verification email (Ethereal)',
+            text: `Your verification code is: ${code}`,
+            html: `<b>Your verification code is: ${code}</b>`,
+        });
+
+        const previewUrl = nodemailer.getTestMessageUrl(info);
+        console.log('Ethereal preview URL:', previewUrl);
+        return res.status(200).json({ success: 'Test email sent (Ethereal)', previewUrl });
+    } catch (error) {
+        console.error('Error in testEmail:', error);
+        return res.status(500).json({ error: 'Failed to send test email', detail: error && error.message });
+    }
+};
+
 const verifyOTP = async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -302,6 +349,7 @@ module.exports = {
     addUserLocation,
     upload,
     requestPasswordReset,
+    testEmail,
     verifyOTP,
     resetPasswordWithOTP
 
