@@ -125,23 +125,41 @@ const userLogin = async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });
+
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ error: "Invalid email or password" });
         }
+
+        // 🔥 If NOT VERIFIED → send NEW OTP automatically
         if (!user.isVerified) {
-            return res.status(403).json({ error: "Please verify your email before logging in" });
+
+            const newCode = Math.floor(100000 + Math.random() * 900000).toString();
+            user.verificationcode = newCode;
+            await user.save();
+
+            await sendverificationcode(user.email, newCode);
+
+            return res.status(403).json({
+                error: "Please verify your email before logging in",
+                message: "New OTP sent"
+            });
         }
+
         const token = jwt.sign({ userId: user._id }, secretkey, { expiresIn: "1h" });
 
+        res.status(200).json({
+            success: "Login successful",
+            token,
+            userId: user._id,
+            photo: user.photo
+        });
 
-        const photo = user.photo;
-
-        res.status(200).json({ success: "Login successful", token, userId: user._id, photo });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
 
 const getallusers = async (req, res) => {
     try {
