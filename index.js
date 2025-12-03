@@ -13,8 +13,9 @@ dotEnv.config();
 
 const app = express();
 app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
+  origin: '*',  // allow all origins (or replace * with your local frontend URL)
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
 }));
 
 app.use(express.json());
